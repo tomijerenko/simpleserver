@@ -1,7 +1,11 @@
 package main
 
-import simpleserver "simpleserver/internal"
+import (
+	"os"
+	simpleserver "simpleserver/internal"
+)
 
 func main() {
-	simpleserver.Start(":8081")
+	port := os.Args[1]
+	simpleserver.Start(port)
 }

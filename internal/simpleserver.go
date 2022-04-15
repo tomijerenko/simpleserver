@@ -6,21 +6,39 @@ import (
 	"net/http"
 )
 
-func Start(address string) {
-	http.HandleFunc("/left", left)
-
-	http.HandleFunc("/right", right)
-
-	fmt.Println("Server listening on", address)
-	log.Fatal(http.ListenAndServe(address, nil))
+type endpoint struct {
+	hostname string
+	port     string
 }
 
-func left(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("LEFT was triggered")
-	fmt.Fprintf(w, "LEFT")
+func Start(port string) {
+	e := &endpoint{
+		hostname: "localhost",
+		port:     port,
+	}
+
+	http.HandleFunc("/", e.base)
+	http.HandleFunc("/left", e.left)
+	http.HandleFunc("/right", e.right)
+
+	fmt.Println("Server listening on " + e.hostname + ":" + e.port)
+	log.Fatal(http.ListenAndServe(":"+e.port, nil))
 }
 
-func right(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("RIGHT was triggered")
-	fmt.Fprintf(w, "RIGHT")
+func (e *endpoint) base(w http.ResponseWriter, r *http.Request) {
+	out := e.hostname + ":" + e.port + "/"
+	fmt.Println(out)
+	fmt.Fprintf(w, out)
+}
+
+func (e *endpoint) left(w http.ResponseWriter, r *http.Request) {
+	out := e.hostname + ":" + e.port + "/left"
+	fmt.Println(out)
+	fmt.Fprintf(w, out)
+}
+
+func (e *endpoint) right(w http.ResponseWriter, r *http.Request) {
+	out := e.hostname + ":" + e.port + "/right"
+	fmt.Println(out)
+	fmt.Fprintf(w, out)
 }
